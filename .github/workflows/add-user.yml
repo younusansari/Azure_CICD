@@ -13,6 +13,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check Secrets
+        run: |
+          echo "Client ID exists: ${{ secrets.AZURE_CLIENT_ID != '' }}"
+          echo "Tenant ID exists: ${{ secrets.AZURE_TENANT_ID != '' }}"
+          echo "Client Secret exists: ${{ secrets.AZURE_CLIENT_SECRET != '' }}"
+
+
       - name: Azure Login
         uses: azure/login@v2
         with:

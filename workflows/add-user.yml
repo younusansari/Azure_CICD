@@ -1,0 +1,34 @@
+name: Add User to Azure Group
+
+on:
+  workflow_dispatch:
+
+jobs:
+  add-user:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+
+      - name: Add User to Group
+        run: |
+          USER_ID="77b0b6d8-a24e-44ef-93c4-41c6ad179278"
+          GROUP_ID="a40be65c-efb0-469f-8f42-0aa9522da1f1"
+
+          az rest \
+            --method POST \
+            --url "https://graph.microsoft.com/v1.0/groups/$GROUP_ID/members/\$ref" \
+            --headers "Content-Type=application/json" \
+            --body "{
+              \"@odata.id\":\"https://graph.microsoft.com/v1.0/directoryObjects/$USER_ID\"
+            }"

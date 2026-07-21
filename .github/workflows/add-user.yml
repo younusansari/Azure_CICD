@@ -19,6 +19,11 @@ jobs:
           echo "Tenant ID exists: ${{ secrets.AZURE_TENANT_ID != '' }}"
           echo "Client Secret exists: ${{ secrets.AZURE_CLIENT_SECRET != '' }}"
 
+      - name: Show Azure Login Inputs
+        run: |
+          echo "Client ID length: ${#{{ secrets.AZURE_CLIENT_ID }}}"
+          echo "Tenant ID length: ${#{{ secrets.AZURE_TENANT_ID }}}"
+          echo "Client Secret length: ${#{{ secrets.AZURE_CLIENT_SECRET }}}"
 
       - name: Azure Login
         uses: azure/login@v2

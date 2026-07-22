@@ -1,0 +1,54 @@
+name: Get User ID from Email
+
+on:
+  workflow_dispatch:
+    inputs:
+      user_email:
+        description: "User Email Address"
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  get-user:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      - name: Get User Object ID
+        run: |
+          EMAIL="${{ github.event.inputs.user_email }}"
+
+          echo "Searching for user: $EMAIL"
+
+          USER_ID=$(az rest \
+            --method GET \
+            --url "https://graph.microsoft.com/v1.0/users/$EMAIL?\$select=id,userPrincipalName,displayName" \
+            --query id \
+            -o tsv)
+
+          if [ -z "$USER_ID" ]; then
+            echo "❌ User '$EMAIL' not found."
+            exit 1
+          fi
+
+          echo "✅ User found."
+          echo "User Object ID: $USER_ID"
+
+          echo "USER_ID=$USER_ID" >> $GITHUB_ENV
+
+
+      - name: Display User ID
+        run: |
+          echo "The User Object ID is: $USER_ID"

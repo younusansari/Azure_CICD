@@ -1,4 +1,4 @@
-name: Add User to Azure Group
+name: Test Login to Azure
 
 on:
   workflow_dispatch:
